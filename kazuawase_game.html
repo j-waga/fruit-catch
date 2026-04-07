@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="かずあわせ">
+<title>🔢 かずあわせ あそび！</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+html, body {
+  font-family: 'Hiragino Marugo ProN', 'Hiragino Maru Gothic ProN', 'rounded-mgenplus-1c', sans-serif;
+  background: #F0F8FF;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  display: flex; flex-direction: column; align-items: center;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+#header {
+  width: 100%; padding: 13px 16px; text-align: center;
+  background: #4A90D9;
+  box-shadow: 0 4px 0 #2C6FAD;
+}
+#header h1 { font-size: 20px; color: #fff; font-weight: 700; letter-spacing: 2px; text-shadow: 0 2px 0 rgba(0,0,0,0.15); }
+
+#hud {
+  width: 100%; max-width: 480px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 20px; background: #fff;
+  border-bottom: 3px solid #D0E8FF;
+}
+.hud-item { text-align: center; }
+.hud-label { font-size: 11px; color: #88AACC; font-weight: 700; letter-spacing: 1px; }
+.hud-val { font-size: 22px; font-weight: 700; color: #334466; }
+
+#level-bar {
+  display: flex; gap: 8px; padding: 10px 12px 0;
+  width: 100%; max-width: 480px; overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+#level-bar::-webkit-scrollbar { display: none; }
+.lv-btn {
+  flex-shrink: 0; padding: 7px 16px; border-radius: 999px;
+  border: 2px solid #ccc; background: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 700; color: #888;
+  cursor: pointer;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+}
+.lv-btn.active { background: #4A90D9; border-color: #4A90D9; color: #fff; }
+
+#game { width: 100%; max-width: 480px; padding: 12px 14px 24px; }
+
+#question-box {
+  background: #fff; border-radius: 20px; border: 3px solid #AED6F1;
+  padding: 16px 14px; margin-bottom: 14px;
+  box-shadow: 0 5px 0 #AED6F1; text-align: center;
+}
+#q-label { font-size: 16px; font-weight: 700; color: #5588AA; margin-bottom: 10px; }
+#q-number {
+  font-size: 72px; font-weight: 700; color: #E74C3C;
+  line-height: 1; margin-bottom: 8px;
+  text-shadow: 2px 3px 0 rgba(200,0,0,0.15);
+}
+#q-hiragana { font-size: 22px; font-weight: 700; color: #E74C3C; margin-bottom: 10px; }
+#q-objects {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  min-height: 52px; align-items: center;
+}
+.q-obj { font-size: 36px; animation: popIn 0.2s ease both; }
+
+@keyframes popIn {
+  0%   { transform: scale(0); opacity: 0; }
+  80%  { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+#choices-label { font-size: 15px; font-weight: 700; color: #5588AA; text-align: center; margin-bottom: 10px; }
+#choices { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 14px; }
+
+.choice-btn {
+  background: #fff; border: 3px solid #D5E8F5;
+  border-radius: 18px; padding: 10px 4px;
+  cursor: pointer; text-align: center;
+  box-shadow: 0 5px 0 #C0D8EC;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-height: 100px; justify-content: center;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+  transition: transform 0.1s, box-shadow 0.1s;
+  /* iOSボタンリセット */
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.choice-btn:active,
+.choice-btn.pressed {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #C0D8EC;
+}
+.choice-btn.correct { background: #D5F5E3; border-color: #2ECC71; box-shadow: 0 5px 0 #27AE60; }
+.choice-btn.wrong   { background: #FADBD8; border-color: #E74C3C; box-shadow: 0 5px 0 #CB4335; }
+.choice-btn:disabled { opacity: 1; }
+
+.choice-num { font-size: 32px; font-weight: 700; color: #334466; }
+.choice-obj { font-size: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; max-width: 90px; }
+
+#feedback {
+  text-align: center; font-size: 26px; font-weight: 700;
+  min-height: 40px; color: #334466;
+}
+
+#next-btn {
+  display: none; width: 100%; padding: 14px;
+  font-size: 18px; font-weight: 700; font-family: inherit;
+  border-radius: 999px; border: none;
+  background: #4A90D9; color: #fff;
+  box-shadow: 0 5px 0 #2C6FAD; cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  margin-top: 8px;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+#next-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #2C6FAD; }
+
+#result {
+  display: none; width: 100%; max-width: 480px;
+  padding: 24px 20px; text-align: center;
+}
+#result-card {
+  background: #fff; border-radius: 24px; padding: 32px 20px;
+  border: 3px solid #AED6F1; box-shadow: 0 8px 0 #AED6F1;
+}
+#result-stars { font-size: 40px; letter-spacing: 4px; margin-bottom: 10px; }
+#result-title { font-size: 26px; font-weight: 700; color: #E74C3C; margin-bottom: 8px; }
+#result-score { font-size: 20px; color: #5588AA; margin-bottom: 20px; }
+#restart-btn {
+  width: 100%; max-width: 260px; padding: 14px;
+  font-size: 18px; font-weight: 700; font-family: inherit;
+  border-radius: 999px; border: none;
+  background: #E74C3C; color: #fff;
+  box-shadow: 0 5px 0 #C0392B; cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+#restart-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #C0392B; }
+
+.effect {
+  position: fixed; pointer-events: none; font-size: 28px;
+  animation: flyUp 1s ease-out forwards; z-index: 999;
+}
+@keyframes flyUp {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
+}
+</style>
+</head>
+<body>
+
+<div id="header"><h1>🔢 かずあわせ あそび！</h1></div>
+
+<div id="hud">
+  <div class="hud-item"><div class="hud-label">⭐ てん</div><div class="hud-val" id="score">0</div></div>
+  <div class="hud-item"><div class="hud-label">もんだい</div><div class="hud-val" id="qnum">1 / 8</div></div>
+  <div class="hud-item"><div class="hud-label">❤️ のこり</div><div class="hud-val" id="lives">❤️❤️❤️</div></div>
+</div>
+
+<div id="level-bar">
+  <button class="lv-btn active" id="lv1">🌱 かんたん（1〜5）</button>
+  <button class="lv-btn" id="lv2">🌟 ふつう（1〜10）</button>
+  <button class="lv-btn" id="lv3">🔥 むずかしい（1〜15）</button>
+</div>
+
+<div id="game">
+  <div id="question-box">
+    <div id="q-label">この かず は いくつ？</div>
+    <div id="q-number"></div>
+    <div id="q-hiragana"></div>
+    <div id="q-objects"></div>
+  </div>
+  <div id="choices-label">おなじ かずの えを えらんでね！</div>
+  <div id="choices"></div>
+  <div id="feedback"></div>
+  <button id="next-btn">つぎの もんだい ▶</button>
+</div>
+
+<div id="result">
+  <div id="result-card">
+    <div id="result-stars"></div>
+    <div id="result-title"></div>
+    <div id="result-score"></div>
+    <button id="restart-btn">🔄 もういちど あそぶ</button>
+  </div>
+</div>
+
+<script>
+const READINGS = ['','いち','に','さん','し','ご','ろく','なな','はち','きゅう','じゅう','じゅういち','じゅうに','じゅうさん','じゅうし','じゅうご'];
+const EMOJI_SETS = [
+  ['🍎','🍊','🍋','🍇','🍓','🍒','🍑','🍌','🍉','🍈'],
+  ['🐶','🐱','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸'],
+  ['⭐','🌟','💫','✨','🌙','☀️','🌈','⚡','🔥','❄️'],
+  ['🚗','🚕','🚙','🚌','🚎','🏎','🚓','🚑','🚒','🚐'],
+  ['🌸','🌺','🌻','🌹','🌷','💐','🌼','🌸','🍀','🌿'],
+];
+
+let level = 1;
+let maxNum = 5;
+let qIndex = 0;
+let score = 0;
+let lives = 3;
+let answered = false;
+let questions = [];
+const TOTAL = 8;
+
+// ---- iOS対応タップハンドラ ----
+function addTap(el, fn) {
+  let moved = false;
+  el.addEventListener('touchstart', function(e) {
+    moved = false;
+  }, { passive: true });
+  el.addEventListener('touchmove', function(e) {
+    moved = true;
+  }, { passive: true });
+  el.addEventListener('touchend', function(e) {
+    if (!moved) {
+      e.preventDefault();
+      fn(e);
+    }
+  }, { passive: false });
+  // PCマウス用
+  el.addEventListener('click', function(e) {
+    fn(e);
+  });
+}
+
+// レベルボタン
+document.getElementById('lv1').addEventListener('touchend', function(e){ e.preventDefault(); setLevel(1, this); }, {passive:false});
+document.getElementById('lv1').addEventListener('click', function(){ setLevel(1, this); });
+document.getElementById('lv2').addEventListener('touchend', function(e){ e.preventDefault(); setLevel(2, this); }, {passive:false});
+document.getElementById('lv2').addEventListener('click', function(){ setLevel(2, this); });
+document.getElementById('lv3').addEventListener('touchend', function(e){ e.preventDefault(); setLevel(3, this); }, {passive:false});
+document.getElementById('lv3').addEventListener('click', function(){ setLevel(3, this); });
+
+// 次へ・リスタートボタン
+addTap(document.getElementById('next-btn'), nextQ);
+addTap(document.getElementById('restart-btn'), restart);
+
+function setLevel(lv, btn) {
+  level = lv;
+  maxNum = lv === 1 ? 5 : lv === 2 ? 10 : 15;
+  document.querySelectorAll('.lv-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  restart();
+}
+
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function makeQuestions() {
+  const nums = [];
+  while (nums.length < TOTAL) {
+    const n = 1 + Math.floor(Math.random() * maxNum);
+    nums.push(n);
+  }
+  const emojiSet = EMOJI_SETS[Math.floor(Math.random()*EMOJI_SETS.length)];
+  return nums.map(n => ({
+    num: n,
+    emoji: emojiSet[Math.floor(Math.random()*emojiSet.length)]
+  }));
+}
+
+function makeChoices(correct) {
+  const choices = new Set([correct]);
+  let attempts = 0;
+  while (choices.size < 3 && attempts < 50) {
+    attempts++;
+    let c = 1 + Math.floor(Math.random() * maxNum);
+    if (c !== correct) choices.add(c);
+  }
+  return shuffle([...choices]);
+}
+
+function renderQ() {
+  answered = false;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const q = questions[qIndex];
+  document.getElementById('q-number').textContent = q.num;
+  document.getElementById('q-hiragana').textContent = '（' + READINGS[q.num] + '）';
+  document.getElementById('qnum').textContent = (qIndex+1) + ' / ' + TOTAL;
+
+  const objArea = document.getElementById('q-objects');
+  objArea.innerHTML = '';
+  for (let i = 0; i < q.num; i++) {
+    const span = document.createElement('span');
+    span.className = 'q-obj';
+    span.textContent = q.emoji;
+    span.style.animationDelay = (i * 0.06) + 's';
+    objArea.appendChild(span);
+  }
+
+  const choices = makeChoices(q.num);
+  const container = document.getElementById('choices');
+  container.innerHTML = '';
+
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.setAttribute('type', 'button');
+
+    const numDiv = document.createElement('div');
+    numDiv.className = 'choice-num';
+    numDiv.textContent = c;
+
+    const objDiv = document.createElement('div');
+    objDiv.className = 'choice-obj';
+    for (let i = 0; i < c; i++) {
+      const s = document.createElement('span');
+      s.textContent = q.emoji;
+      s.style.fontSize = c > 10 ? '14px' : c > 6 ? '17px' : '20px';
+      objDiv.appendChild(s);
+    }
+    btn.appendChild(numDiv);
+    btn.appendChild(objDiv);
+
+    // iOS対応タップ
+    addTap(btn, function() {
+      checkAnswer(c, btn, q.num);
+    });
+
+    container.appendChild(btn);
+  });
+
+  updateHUD();
+}
+
+function checkAnswer(chosen, btn, correct) {
+  if (answered) return;
+  answered = true;
+
+  // 全ボタン無効化
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.style.pointerEvents = 'none';
+  });
+
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    score += 10;
+    document.getElementById('feedback').textContent = '⭐ せいかい！ やったね！';
+    spawnEffect();
+  } else {
+    btn.classList.add('wrong');
+    lives = Math.max(0, lives - 1);
+    document.getElementById('feedback').textContent = '❌ ざんねん！ もう いちど！';
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      if (parseInt(b.querySelector('.choice-num').textContent) === correct) {
+        b.classList.add('correct');
+      }
+    });
+  }
+
+  updateHUD();
+
+  const isEnd = lives <= 0 || qIndex >= TOTAL - 1;
+  setTimeout(function() {
+    if (isEnd) {
+      showResult();
+    } else {
+      document.getElementById('next-btn').style.display = 'block';
+    }
+  }, 900);
+}
+
+function nextQ() {
+  qIndex++;
+  renderQ();
+}
+
+function updateHUD() {
+  document.getElementById('score').textContent = score;
+  let h = '';
+  for (let i = 0; i < lives; i++) h += '❤️';
+  for (let i = lives; i < 3; i++) h += '🤍';
+  document.getElementById('lives').textContent = h;
+}
+
+function showResult() {
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+  const pct = score / (TOTAL * 10);
+  const stars = pct >= 0.8 ? '⭐⭐⭐' : pct >= 0.5 ? '⭐⭐' : '⭐';
+  const title = pct >= 0.8 ? 'すごい！ かんぺき！' : pct >= 0.5 ? 'よくできました！' : 'がんばったね！';
+  document.getElementById('result-stars').textContent = stars;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score').textContent = score + ' てん とれたよ！';
+}
+
+function restart() {
+  qIndex = 0; score = 0; lives = 3; answered = false;
+  questions = makeQuestions();
+  document.getElementById('game').style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+  renderQ();
+}
+
+function spawnEffect() {
+  const emojis = ['⭐','🌟','✨','💫','🎉','🎊'];
+  for (let i = 0; i < 4; i++) {
+    const el = document.createElement('div');
+    el.className = 'effect';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = (10 + Math.random() * 80) + '%';
+    el.style.top = (30 + Math.random() * 40) + '%';
+    el.style.animationDelay = (i * 0.1) + 's';
+    document.body.appendChild(el);
+    setTimeout(function() { el.remove(); }, 1100);
+  }
+}
+
+restart();
+</script>
+</body>
+</html>
