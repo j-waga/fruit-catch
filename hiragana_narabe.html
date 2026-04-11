@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ひらがなならべ</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: linear-gradient(135deg, #e8f4ff 0%, #d0e8ff 100%);
+  min-height: 100vh;
+  font-family: 'Hiragino Maru Gothic Pro', 'BIZ UDPGothic', sans-serif;
+  touch-action: manipulation;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+h1 { font-size: 26px; color: #2980b9; margin: 16px 0 4px; }
+#question-area {
+  background: white;
+  border-radius: 20px;
+  padding: 16px 24px;
+  margin: 10px 16px;
+  width: calc(100% - 32px);
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+#hint-emoji { font-size: 64px; margin-bottom: 6px; }
+#hint-text { font-size: 16px; color: #888; margin-bottom: 8px; }
+#answer-slots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  min-height: 56px;
+}
+.slot {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  border: 2.5px dashed #aad4f5;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: bold; color: #2980b9;
+  background: #f0f8ff;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.slot.filled { border-style: solid; border-color: #2980b9; background: #ddeeff; }
+.slot:active { transform: scale(0.92); }
+#choices-area {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 16px;
+  max-width: 420px;
+  width: 100%;
+}
+.choice-btn {
+  width: 64px; height: 64px;
+  border-radius: 16px;
+  border: 3px solid #5dade2;
+  background: white;
+  font-size: 30px;
+  font-weight: bold;
+  color: #1a6fa0;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  transition: all 0.1s;
+}
+.choice-btn:active { transform: scale(0.88); background: #ddeeff; }
+.choice-btn.used { opacity: 0.3; pointer-events: none; }
+#feedback {
+  font-size: 28px;
+  font-weight: bold;
+  height: 40px;
+  text-align: center;
+  transition: all 0.2s;
+}
+#stats-bar {
+  display: flex;
+  gap: 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #2980b9;
+  margin: 6px 0;
+}
+#stats-bar span { background: white; border-radius: 12px; padding: 6px 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.correct-anim { animation: correct-flash 0.5s ease; }
+@keyframes correct-flash {
+  0%,100% { background: white; }
+  50% { background: #aef5d0; }
+}
+</style>
+</head>
+<body>
+
+<h1>🔤 ひらがなならべ</h1>
+<div id="stats-bar">
+  <span>⭐ <span id="score">0</span>てん</span>
+  <span>🎯 <span id="q-num">1</span>もんめ</span>
+</div>
+
+<div id="question-area">
+  <div id="hint-emoji">🐱</div>
+  <div id="hint-text">なんていう？</div>
+  <div id="answer-slots"></div>
+  <div id="feedback" style="margin-top:8px;"></div>
+</div>
+
+<div id="choices-area"></div>
+
+<script>
+const WORDS = [
+  {emoji:'🐱',word:'ねこ',hint:'ニャーとなく'},
+  {emoji:'🐶',word:'いぬ',hint:'ワンとなく'},
+  {emoji:'🐸',word:'かえる',hint:'ケロケロなく'},
+  {emoji:'🐟',word:'さかな',hint:'みずのなか'},
+  {emoji:'🍎',word:'りんご',hint:'あかいくだもの'},
+  {emoji:'🍌',word:'ばなな',hint:'きいろいくだもの'},
+  {emoji:'☀️',word:'たいよう',hint:'あかるくひかる'},
+  {emoji:'🌙',word:'つき',hint:'よるにでる'},
+  {emoji:'⭐',word:'ほし',hint:'きらきらひかる'},
+  {emoji:'🌸',word:'はな',hint:'きれいにさく'},
+  {emoji:'🚂',word:'でんしゃ',hint:'はやくはしる'},
+  {emoji:'🚗',word:'くるま',hint:'どうろをはしる'},
+  {emoji:'✈️',word:'ひこうき',hint:'そらをとぶ'},
+  {emoji:'🏠',word:'いえ',hint:'すむところ'},
+  {emoji:'🍙',word:'おにぎり',hint:'ごはんでつくる'},
+  {emoji:'🎈',word:'ふうせん',hint:'ふわふわとぶ'},
+];
+
+let score = 0, qNum = 0;
+let currentWord = '', userInput = [], usedChoices = [];
+let shuffledChoices = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for(let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function nextQuestion() {
+  qNum++;
+  document.getElementById('q-num').textContent = qNum;
+  document.getElementById('feedback').textContent = '';
+  userInput = [];
+  usedChoices = [];
+
+  const q = WORDS[Math.floor(Math.random() * WORDS.length)];
+  currentWord = q.word;
+  document.getElementById('hint-emoji').textContent = q.emoji;
+  document.getElementById('hint-text').textContent = q.hint;
+
+  const correctChars = currentWord.split('');
+  const allHira = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん';
+  const distractors = shuffle([...allHira].filter(c => !correctChars.includes(c))).slice(0, Math.max(0, 6 - correctChars.length));
+  shuffledChoices = shuffle([...correctChars, ...distractors]);
+
+  renderSlots();
+  renderChoices();
+}
+
+function renderSlots() {
+  const area = document.getElementById('answer-slots');
+  area.innerHTML = '';
+  for(let i = 0; i < currentWord.length; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'slot' + (userInput[i] ? ' filled' : '');
+    slot.textContent = userInput[i] || '';
+    slot.dataset.idx = i;
+    if(userInput[i]) slot.addEventListener('touchstart', (e) => { e.preventDefault(); removeChar(i); }, {passive:false});
+    if(userInput[i]) slot.addEventListener('mousedown', () => removeChar(i));
+    area.appendChild(slot);
+  }
+}
+
+function renderChoices() {
+  const area = document.getElementById('choices-area');
+  area.innerHTML = '';
+  shuffledChoices.forEach((ch, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'choice-btn' + (usedChoices[i] ? ' used' : '');
+    btn.textContent = ch;
+    btn.dataset.ci = i;
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); tapChoice(ch, i, btn); }, {passive:false});
+    btn.addEventListener('mousedown', () => tapChoice(ch, i, btn));
+    area.appendChild(btn);
+  });
+}
+
+function tapChoice(ch, ci, btn) {
+  if(usedChoices[ci]) return;
+  const nextEmpty = userInput.findIndex((v, i) => v === undefined || v === '');
+  const fillIdx = userInput.length < currentWord.length ? userInput.length : -1;
+  if(userInput.filter(v=>v).length >= currentWord.length) return;
+  usedChoices[ci] = true;
+  userInput.push(ch);
+  btn.classList.add('used');
+  renderSlots();
+  if(userInput.length === currentWord.length) checkAnswer();
+}
+
+function removeChar(idx) {
+  const removed = userInput[idx];
+  userInput.splice(idx, 1);
+  const choiceIdx = shuffledChoices.findIndex((c, i) => c === removed && usedChoices[i]);
+  if(choiceIdx >= 0) usedChoices[choiceIdx] = false;
+  renderSlots();
+  renderChoices();
+  document.getElementById('feedback').textContent = '';
+}
+
+function checkAnswer() {
+  const answer = userInput.join('');
+  const fb = document.getElementById('feedback');
+  if(answer === currentWord) {
+    fb.textContent = '⭕ せいかい！すごい！';
+    fb.style.color = '#27ae60';
+    score += 10;
+    document.getElementById('score').textContent = score;
+    document.getElementById('question-area').classList.add('correct-anim');
+    setTimeout(() => {
+      document.getElementById('question-area').classList.remove('correct-anim');
+      nextQuestion();
+    }, 1000);
+  } else {
+    fb.textContent = '❌ ちがうよ！もういちど！';
+    fb.style.color = '#e74c3c';
+    setTimeout(() => {
+      userInput = [];
+      usedChoices = [];
+      fb.textContent = '';
+      renderSlots();
+      renderChoices();
+    }, 1200);
+  }
+}
+
+nextQuestion();
+</script>
+</body>
+</html>
