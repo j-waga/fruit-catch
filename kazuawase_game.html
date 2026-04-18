@@ -20,14 +20,12 @@ html, body {
   -webkit-user-select: none;
   touch-action: manipulation;
 }
-
 #header {
   width: 100%; padding: 13px 16px; text-align: center;
   background: #4A90D9;
   box-shadow: 0 4px 0 #2C6FAD;
 }
 #header h1 { font-size: 20px; color: #fff; font-weight: 700; letter-spacing: 2px; text-shadow: 0 2px 0 rgba(0,0,0,0.15); }
-
 #hud {
   width: 100%; max-width: 480px;
   display: flex; justify-content: space-between; align-items: center;
@@ -37,7 +35,6 @@ html, body {
 .hud-item { text-align: center; }
 .hud-label { font-size: 11px; color: #88AACC; font-weight: 700; letter-spacing: 1px; }
 .hud-val { font-size: 22px; font-weight: 700; color: #334466; }
-
 #level-bar {
   display: flex; gap: 8px; padding: 10px 12px 0;
   width: 100%; max-width: 480px; overflow-x: auto; scrollbar-width: none;
@@ -53,9 +50,7 @@ html, body {
   touch-action: manipulation;
 }
 .lv-btn.active { background: #4A90D9; border-color: #4A90D9; color: #fff; }
-
 #game { width: 100%; max-width: 480px; padding: 12px 14px 24px; }
-
 #question-box {
   background: #fff; border-radius: 20px; border: 3px solid #AED6F1;
   padding: 16px 14px; margin-bottom: 14px;
@@ -73,16 +68,13 @@ html, body {
   min-height: 52px; align-items: center;
 }
 .q-obj { font-size: 36px; animation: popIn 0.2s ease both; }
-
 @keyframes popIn {
   0%   { transform: scale(0); opacity: 0; }
   80%  { transform: scale(1.2); }
   100% { transform: scale(1); opacity: 1; }
 }
-
 #choices-label { font-size: 15px; font-weight: 700; color: #5588AA; text-align: center; margin-bottom: 10px; }
 #choices { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 14px; }
-
 .choice-btn {
   background: #fff; border: 3px solid #D5E8F5;
   border-radius: 18px; padding: 10px 4px;
@@ -93,27 +85,19 @@ html, body {
   -webkit-appearance: none;
   touch-action: manipulation;
   transition: transform 0.1s, box-shadow 0.1s;
-  /* iOSボタンリセット */
   outline: none;
   -webkit-tap-highlight-color: transparent;
 }
-.choice-btn:active,
-.choice-btn.pressed {
-  transform: translateY(4px);
-  box-shadow: 0 1px 0 #C0D8EC;
-}
+.choice-btn:active, .choice-btn.pressed { transform: translateY(4px); box-shadow: 0 1px 0 #C0D8EC; }
 .choice-btn.correct { background: #D5F5E3; border-color: #2ECC71; box-shadow: 0 5px 0 #27AE60; }
 .choice-btn.wrong   { background: #FADBD8; border-color: #E74C3C; box-shadow: 0 5px 0 #CB4335; }
 .choice-btn:disabled { opacity: 1; }
-
 .choice-num { font-size: 32px; font-weight: 700; color: #334466; }
 .choice-obj { font-size: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; max-width: 90px; }
-
 #feedback {
   text-align: center; font-size: 26px; font-weight: 700;
   min-height: 40px; color: #334466;
 }
-
 #next-btn {
   display: none; width: 100%; padding: 14px;
   font-size: 18px; font-weight: 700; font-family: inherit;
@@ -127,7 +111,6 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 #next-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #2C6FAD; }
-
 #result {
   display: none; width: 100%; max-width: 480px;
   padding: 24px 20px; text-align: center;
@@ -149,9 +132,9 @@ html, body {
   -webkit-appearance: none;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  display: block; margin: 0 auto 12px;
 }
 #restart-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #C0392B; }
-
 .effect {
   position: fixed; pointer-events: none; font-size: 28px;
   animation: flyUp 1s ease-out forwards; z-index: 999;
@@ -159,6 +142,51 @@ html, body {
 @keyframes flyUp {
   0%   { opacity: 1; transform: translateY(0) scale(1); }
   100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
+}
+
+/* ===== Xフォローバナー ===== */
+#x-banner {
+  position: fixed;
+  bottom: 18px; right: 18px;
+  z-index: 99999;
+  background: #000; color: #fff;
+  border-radius: 999px;
+  padding: 10px 16px 10px 10px;
+  font-family: 'Hiragino Maru Gothic ProN', sans-serif;
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s, box-shadow 0.15s;
+  max-width: 240px;
+  user-select: none;
+  animation: xSlideUp 0.5s cubic-bezier(.22,1,.36,1) 1.5s both;
+}
+#x-banner:active { transform: scale(0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+@keyframes xSlideUp {
+  from { transform: translateY(80px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.x-smiley {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 50%; background: #FFD700;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; line-height: 1;
+}
+.x-text-block { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.x-handle {
+  font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; gap: 5px; color: #fff;
+}
+.x-handle svg { width: 13px; height: 13px; fill: #fff; flex-shrink: 0; }
+.x-msg { font-size: 11px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ===== 花火キャンバス ===== */
+#fireworks-canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9000;
 }
 </style>
 </head>
@@ -197,8 +225,35 @@ html, body {
     <div id="result-title"></div>
     <div id="result-score"></div>
     <button id="restart-btn">🔄 もういちど あそぶ</button>
+    <!-- 結果画面内Xバナー -->
+    <a href="https://x.com/rabojasu" target="_blank" rel="noopener noreferrer"
+       style="margin-top:4px;background:#000;color:#fff;border-radius:999px;padding:12px 20px 12px 12px;font-size:14px;font-weight:bold;text-decoration:none;display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2);max-width:300px;margin-left:auto;margin-right:auto;">
+      <span style="width:36px;height:36px;border-radius:50%;background:#FFD700;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">😊</span>
+      <span style="display:flex;flex-direction:column;gap:2px;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:13px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          @rabojasu をフォロー
+        </span>
+        <span style="font-size:11px;color:#ccc;">いいね！協力いただけると嬉しいです😊</span>
+      </span>
+    </a>
   </div>
 </div>
+
+<!-- 花火キャンバス -->
+<canvas id="fireworks-canvas"></canvas>
+
+<!-- Xフォローバナー（常時固定） -->
+<a id="x-banner" href="https://x.com/rabojasu" target="_blank" rel="noopener noreferrer">
+  <span class="x-smiley">😊</span>
+  <span class="x-text-block">
+    <span class="x-handle">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      @rabojasu
+    </span>
+    <span class="x-msg">いいね！協力いただけると嬉しいです😊</span>
+  </span>
+</a>
 
 <script>
 const READINGS = ['','いち','に','さん','し','ご','ろく','なな','はち','きゅう','じゅう','じゅういち','じゅうに','じゅうさん','じゅうし','じゅうご'];
@@ -210,37 +265,21 @@ const EMOJI_SETS = [
   ['🌸','🌺','🌻','🌹','🌷','💐','🌼','🌸','🍀','🌿'],
 ];
 
-let level = 1;
-let maxNum = 5;
-let qIndex = 0;
-let score = 0;
-let lives = 3;
-let answered = false;
-let questions = [];
+let level = 1, maxNum = 5;
+let qIndex = 0, score = 0, lives = 3, answered = false;
+let questions = [], perfectCount = 0;
 const TOTAL = 8;
 
-// ---- iOS対応タップハンドラ ----
 function addTap(el, fn) {
   let moved = false;
-  el.addEventListener('touchstart', function(e) {
-    moved = false;
-  }, { passive: true });
-  el.addEventListener('touchmove', function(e) {
-    moved = true;
-  }, { passive: true });
+  el.addEventListener('touchstart', function(e) { moved = false; }, { passive: true });
+  el.addEventListener('touchmove', function(e) { moved = true; }, { passive: true });
   el.addEventListener('touchend', function(e) {
-    if (!moved) {
-      e.preventDefault();
-      fn(e);
-    }
+    if (!moved) { e.preventDefault(); fn(e); }
   }, { passive: false });
-  // PCマウス用
-  el.addEventListener('click', function(e) {
-    fn(e);
-  });
+  el.addEventListener('click', function(e) { fn(e); });
 }
 
-// レベルボタン
 document.getElementById('lv1').addEventListener('touchend', function(e){ e.preventDefault(); setLevel(1, this); }, {passive:false});
 document.getElementById('lv1').addEventListener('click', function(){ setLevel(1, this); });
 document.getElementById('lv2').addEventListener('touchend', function(e){ e.preventDefault(); setLevel(2, this); }, {passive:false});
@@ -248,7 +287,6 @@ document.getElementById('lv2').addEventListener('click', function(){ setLevel(2,
 document.getElementById('lv3').addEventListener('touchend', function(e){ e.preventDefault(); setLevel(3, this); }, {passive:false});
 document.getElementById('lv3').addEventListener('click', function(){ setLevel(3, this); });
 
-// 次へ・リスタートボタン
 addTap(document.getElementById('next-btn'), nextQ);
 addTap(document.getElementById('restart-btn'), restart);
 
@@ -316,16 +354,13 @@ function renderQ() {
   const choices = makeChoices(q.num);
   const container = document.getElementById('choices');
   container.innerHTML = '';
-
   choices.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
     btn.setAttribute('type', 'button');
-
     const numDiv = document.createElement('div');
     numDiv.className = 'choice-num';
     numDiv.textContent = c;
-
     const objDiv = document.createElement('div');
     objDiv.className = 'choice-obj';
     for (let i = 0; i < c; i++) {
@@ -336,12 +371,7 @@ function renderQ() {
     }
     btn.appendChild(numDiv);
     btn.appendChild(objDiv);
-
-    // iOS対応タップ
-    addTap(btn, function() {
-      checkAnswer(c, btn, q.num);
-    });
-
+    addTap(btn, function() { checkAnswer(c, btn, q.num); });
     container.appendChild(btn);
   });
 
@@ -351,20 +381,18 @@ function renderQ() {
 function checkAnswer(chosen, btn, correct) {
   if (answered) return;
   answered = true;
-
-  // 全ボタン無効化
-  document.querySelectorAll('.choice-btn').forEach(b => {
-    b.style.pointerEvents = 'none';
-  });
+  document.querySelectorAll('.choice-btn').forEach(b => { b.style.pointerEvents = 'none'; });
 
   if (chosen === correct) {
     btn.classList.add('correct');
     score += 10;
+    perfectCount++;
     document.getElementById('feedback').textContent = '⭐ せいかい！ やったね！';
     spawnEffect();
   } else {
     btn.classList.add('wrong');
     lives = Math.max(0, lives - 1);
+    perfectCount = 0; /* ミスでリセット */
     document.getElementById('feedback').textContent = '❌ ざんねん！ もう いちど！';
     document.querySelectorAll('.choice-btn').forEach(b => {
       if (parseInt(b.querySelector('.choice-num').textContent) === correct) {
@@ -374,21 +402,14 @@ function checkAnswer(chosen, btn, correct) {
   }
 
   updateHUD();
-
   const isEnd = lives <= 0 || qIndex >= TOTAL - 1;
   setTimeout(function() {
-    if (isEnd) {
-      showResult();
-    } else {
-      document.getElementById('next-btn').style.display = 'block';
-    }
+    if (isEnd) { showResult(); }
+    else { document.getElementById('next-btn').style.display = 'block'; }
   }, 900);
 }
 
-function nextQ() {
-  qIndex++;
-  renderQ();
-}
+function nextQ() { qIndex++; renderQ(); }
 
 function updateHUD() {
   document.getElementById('score').textContent = score;
@@ -407,10 +428,15 @@ function showResult() {
   document.getElementById('result-stars').textContent = stars;
   document.getElementById('result-title').textContent = title;
   document.getElementById('result-score').textContent = score + ' てん とれたよ！';
+
+  /* 🎆 全問正解（80点以上）で花火3発！ */
+  if (pct >= 0.8) {
+    setTimeout(launchFireworks, 400);
+  }
 }
 
 function restart() {
-  qIndex = 0; score = 0; lives = 3; answered = false;
+  qIndex = 0; score = 0; lives = 3; answered = false; perfectCount = 0;
   questions = makeQuestions();
   document.getElementById('game').style.display = 'block';
   document.getElementById('result').style.display = 'none';
@@ -431,7 +457,90 @@ function spawnEffect() {
   }
 }
 
-restart();
+/* =============================================
+   🎆 花火エフェクト（Canvas）
+   全問正解（80%以上）で3発打ち上げ
+============================================= */
+(function() {
+  const canvas = document.getElementById('fireworks-canvas');
+  const ctx = canvas.getContext('2d');
+  let animId = null;
+  let particles = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function createBurst(x, y, color) {
+    const count = 60;
+    for(let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 / count) * i;
+      const speed = 3 + Math.random() * 5;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        alpha: 1, color,
+        radius: 3 + Math.random() * 3,
+        decay: 0.013 + Math.random() * 0.007,
+        gravity: 0.12
+      });
+    }
+  }
+
+  const PALETTES = [
+    ['#FF6B6B','#FFD93D'],
+    ['#6BCB77','#4D96FF'],
+    ['#FFD700','#C77DFF']
+  ];
+
+  window.launchFireworks = function() {
+    if(animId) cancelAnimationFrame(animId);
+    particles = [];
+    const W = canvas.width, H = canvas.height;
+
+    setTimeout(function() {
+      createBurst(W * 0.25, H * 0.30, PALETTES[0][0]);
+      createBurst(W * 0.25, H * 0.30, PALETTES[0][1]);
+      if(!animId) loop();
+    }, 0);
+    setTimeout(function() {
+      createBurst(W * 0.50, H * 0.20, PALETTES[1][0]);
+      createBurst(W * 0.50, H * 0.20, PALETTES[1][1]);
+    }, 500);
+    setTimeout(function() {
+      createBurst(W * 0.75, H * 0.28, PALETTES[2][0]);
+      createBurst(W * 0.75, H * 0.28, PALETTES[2][1]);
+    }, 1000);
+  };
+
+  function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(function(p) {
+      p.x += p.vx; p.y += p.vy;
+      p.vy += p.gravity;
+      p.vx *= 0.97; p.vy *= 0.97;
+      p.alpha -= p.decay;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+    particles = particles.filter(p => p.alpha > 0);
+    if(particles.length > 0) {
+      animId = requestAnimationFrame(loop);
+    } else {
+      animId = null;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+})();
 </script>
 </body>
 </html>
