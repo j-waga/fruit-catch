@@ -197,7 +197,7 @@ body {
 #result-card {
   background: rgba(255,255,255,0.98);
   border-radius: 28px;
-  padding: 30px 24px;
+  padding: 30px 24px 20px;
   text-align: center;
   width: 92%; max-width: 340px;
   box-shadow: 0 10px 0 rgba(0,0,0,0.15);
@@ -214,49 +214,29 @@ body {
   -webkit-tap-highlight-color: transparent;
   -webkit-appearance: none;
   appearance: none;
+  cursor: pointer;
 }
 .res-btn:active { transform: translateY(3px); }
 #btn-retry { background: #E74C3C; color: #fff; box-shadow: 0 5px 0 #C0392B; }
 #btn-menu  { background: #f0f0f0; color: #555; box-shadow: 0 5px 0 #ccc; }
 
-/* ===== Xフォローバナー ===== */
-#x-banner {
-  position: fixed;
-  bottom: 18px; right: 18px;
-  z-index: 99999;
-  background: #000; color: #fff;
+/* ① Xバナー：結果画面内の一番下・小さく */
+#x-result-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 6px;
+  padding: 8px 14px;
+  background: #111;
   border-radius: 999px;
-  padding: 10px 16px 10px 10px;
-  font-family: 'Hiragino Maru Gothic ProN', 'Hiragino Maru Gothic Pro', sans-serif;
-  display: flex; align-items: center; gap: 10px;
   text-decoration: none;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 0.15s, box-shadow 0.15s;
-  max-width: 240px;
-  user-select: none;
-  animation: xSlideUp 0.5s cubic-bezier(.22,1,.36,1) 1.5s both;
+  opacity: 0.72;
+  font-size: 12px;
+  color: #fff;
 }
-#x-banner:active { transform: scale(0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-@keyframes xSlideUp {
-  from { transform: translateY(80px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-.x-smiley {
-  width: 40px; height: 40px; flex-shrink: 0;
-  border-radius: 50%; background: #FFD700;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px; line-height: 1;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
-}
-.x-text-block { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.x-handle {
-  font-weight: 700; font-size: 13px;
-  display: flex; align-items: center; gap: 5px; color: #fff;
-}
-.x-handle svg { width: 13px; height: 13px; fill: #fff; flex-shrink: 0; }
-.x-msg { font-size: 11px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#x-result-banner svg { width: 11px; height: 11px; fill: #fff; flex-shrink: 0; }
+#x-result-banner span { white-space: nowrap; }
 
 /* ===== 花火キャンバス ===== */
 #fireworks-canvas {
@@ -306,18 +286,12 @@ body {
     <div id="result-title"></div>
     <div id="result-detail"></div>
     <button class="res-btn" id="btn-retry">🔄 もういちど！</button>
-    <button class="res-btn" id="btn-menu">🏠 メニューへ</button>
-    <!-- 結果画面内Xバナー -->
-    <a href="https://x.com/rabojasu" target="_blank" rel="noopener noreferrer"
-       style="margin-top:8px;background:#000;color:#fff;border-radius:999px;padding:12px 20px 12px 12px;font-size:14px;font-weight:bold;text-decoration:none;display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
-      <span style="width:36px;height:36px;border-radius:50%;background:#FFD700;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">😊</span>
-      <span style="display:flex;flex-direction:column;gap:2px;">
-        <span style="display:flex;align-items:center;gap:5px;font-size:13px;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          @rabojasu をフォロー
-        </span>
-        <span style="font-size:11px;color:#ccc;">いいね！協力いただけると嬉しいです😊</span>
-      </span>
+    <!-- ③ メニューへボタン：確認ダイアログつき -->
+    <button class="res-btn" id="btn-menu">🏠 メニューへもどる</button>
+    <!-- ① Xバナーを一番下・小さく -->
+    <a id="x-result-banner" href="https://x.com/rabojasu" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      <span>@rabojasu をフォローする</span>
     </a>
   </div>
 </div>
@@ -346,22 +320,10 @@ body {
   <div id="timer-bar-bg"><div id="timer-bar"></div></div>
 </div>
 <div id="field"></div>
+<!-- ② ground固定でスクロール不要・上にスクロールする隙間をなくす -->
 <div id="ground"><div id="ground-text">🌿🌿🌿🌿🌿🌿🌿🌿</div></div>
 
-<!-- 花火キャンバス -->
 <canvas id="fireworks-canvas"></canvas>
-
-<!-- Xフォローバナー（常時固定） -->
-<a id="x-banner" href="https://x.com/rabojasu" target="_blank" rel="noopener noreferrer">
-  <span class="x-smiley">😊</span>
-  <span class="x-text-block">
-    <span class="x-handle">
-      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      @rabojasu
-    </span>
-    <span class="x-msg">いいね！協力いただけると嬉しいです😊</span>
-  </span>
-</a>
 
 <script>
 /* ===== 設定 ===== */
@@ -372,7 +334,6 @@ const LEVELS = {
   hard:   { fallSec: 1.8, intervalMs: 700,  lives: 3, timeSec: 35, maxAtOnce: 4 }
 };
 
-/* ===== 状態変数 ===== */
 let score = 0, caught = 0, missed = 0, lives = 3;
 let timeLeft = 45;
 let gameActive = false;
@@ -399,7 +360,13 @@ document.addEventListener('DOMContentLoaded', function() {
   addTapHandler(document.getElementById('btn-normal'), function(){ startGame('normal'); });
   addTapHandler(document.getElementById('btn-hard'),   function(){ startGame('hard'); });
   addTapHandler(document.getElementById('btn-retry'),  retryGame);
-  addTapHandler(document.getElementById('btn-menu'),   showMenu);
+
+  /* ③ メニューへ：確認ダイアログで誤タップ防止 */
+  addTapHandler(document.getElementById('btn-menu'), function() {
+    if (confirm('メニューにもどりますか？')) {
+      showMenu();
+    }
+  });
 });
 
 /* ===== ゲーム開始 ===== */
@@ -542,7 +509,7 @@ function endGame() {
   let stars, title;
   if (score >= 150) {
     stars = '⭐⭐⭐'; title = 'すごい！ くだものマスター！';
-    launchFireworks(); /* 🎆 花火3発！ */
+    launchFireworks();
   } else if (score >= 80) {
     stars = '⭐⭐'; title = 'よくできました！';
   } else {
@@ -569,12 +536,10 @@ function showMenu() {
   document.getElementById('start-screen').style.display = 'flex';
 }
 
+/* ② スクロール完全ブロック */
 document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
 
-/* =============================================
-   🎆 花火エフェクト（Canvas）
-   ゲームクリア時に3発打ち上げる
-============================================= */
+/* ===== 花火エフェクト ===== */
 (function() {
   const canvas = document.getElementById('fireworks-canvas');
   const ctx = canvas.getContext('2d');
@@ -588,7 +553,6 @@ document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { pa
   window.addEventListener('resize', resize);
   resize();
 
-  /* パーティクル生成（1発分） */
   function createBurst(x, y, color) {
     const count = 60;
     for (let i = 0; i < count; i++) {
@@ -607,71 +571,37 @@ document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { pa
     }
   }
 
-  /* 花火の色セット */
   const PALETTES = [
     ['#FF6B6B','#FF8E53','#FFD93D'],
     ['#6BCB77','#4D96FF','#C77DFF'],
     ['#FFD700','#FF69B4','#00CED1']
   ];
 
-  /* 3発を時間差で打ち上げる */
   window.launchFireworks = function() {
     particles = [];
     if (animId) cancelAnimationFrame(animId);
-
     const W = canvas.width, H = canvas.height;
-
-    /* 1発目：左 */
-    setTimeout(function() {
-      const cols = PALETTES[0];
-      createBurst(W * 0.25, H * 0.30, cols[0]);
-      createBurst(W * 0.25, H * 0.30, cols[1]);
-      if (!animId) loop();
-    }, 200);
-
-    /* 2発目：中央 */
-    setTimeout(function() {
-      const cols = PALETTES[1];
-      createBurst(W * 0.50, H * 0.20, cols[0]);
-      createBurst(W * 0.50, H * 0.20, cols[2]);
-    }, 700);
-
-    /* 3発目：右 */
-    setTimeout(function() {
-      const cols = PALETTES[2];
-      createBurst(W * 0.75, H * 0.28, cols[0]);
-      createBurst(W * 0.75, H * 0.28, cols[1]);
-    }, 1200);
+    setTimeout(function() { createBurst(W*0.25,H*0.30,PALETTES[0][0]); createBurst(W*0.25,H*0.30,PALETTES[0][1]); if(!animId)loop(); }, 200);
+    setTimeout(function() { createBurst(W*0.50,H*0.20,PALETTES[1][0]); createBurst(W*0.50,H*0.20,PALETTES[1][2]); }, 700);
+    setTimeout(function() { createBurst(W*0.75,H*0.28,PALETTES[2][0]); createBurst(W*0.75,H*0.28,PALETTES[2][1]); }, 1200);
   };
 
   function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     particles.forEach(function(p) {
-      p.x  += p.vx;
-      p.y  += p.vy;
-      p.vy += p.gravity;
-      p.vx *= 0.97;
-      p.vy *= 0.97;
-      p.alpha -= p.decay;
-
+      p.x+=p.vx; p.y+=p.vy; p.vy+=p.gravity;
+      p.vx*=0.97; p.vy*=0.97; p.alpha-=p.decay;
       ctx.save();
       ctx.globalAlpha = Math.max(0, p.alpha);
       ctx.fillStyle = p.color;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
       ctx.fill();
       ctx.restore();
     });
-
-    particles = particles.filter(function(p) { return p.alpha > 0; });
-
-    if (particles.length > 0) {
-      animId = requestAnimationFrame(loop);
-    } else {
-      animId = null;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    particles = particles.filter(function(p){ return p.alpha > 0; });
+    if (particles.length > 0) { animId = requestAnimationFrame(loop); }
+    else { animId = null; ctx.clearRect(0,0,canvas.width,canvas.height); }
   }
 })();
 </script>
