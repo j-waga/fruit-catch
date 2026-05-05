@@ -9,243 +9,67 @@
 <title>🍎 くだものキャッチ</title>
 <style>
 * {
-  box-sizing: border-box;
-  margin: 0; padding: 0;
+  box-sizing: border-box; margin: 0; padding: 0;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
 }
-html, body {
-  width: 100%; height: 100%;
-  overflow: hidden;
-  font-family: 'Hiragino Maru Gothic ProN', 'Hiragino Maru Gothic Pro', sans-serif;
-  position: fixed;
-  top: 0; left: 0;
-}
-body {
-  background: linear-gradient(180deg, #87CEEB 0%, #B0E2FF 55%, #C8F0A0 82%, #7DBF3A 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-.cloud {
-  position: fixed;
-  background: rgba(255,255,255,0.82);
-  border-radius: 50px;
-  pointer-events: none;
-  z-index: 1;
-}
-#header {
-  position: relative; z-index: 10;
-  width: 100%; max-width: 480px;
-  padding: 12px 16px 10px;
-  padding-top: max(12px, env(safe-area-inset-top));
-  text-align: center;
-  background: rgba(255,255,255,0.2);
-  border-bottom: 2px solid rgba(255,255,255,0.4);
-}
-#header h1 {
-  font-size: 19px; color: #fff; font-weight: 700;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 6px rgba(0,80,0,0.35);
-}
-#hud {
-  position: relative; z-index: 10;
-  width: 100%; max-width: 480px;
-  display: flex; justify-content: space-around; align-items: center;
-  padding: 6px 8px;
-  background: rgba(255,255,255,0.28);
-}
+html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Hiragino Maru Gothic ProN', 'Hiragino Maru Gothic Pro', sans-serif; position: fixed; top: 0; left: 0; }
+body { background: linear-gradient(180deg, #87CEEB 0%, #B0E2FF 55%, #C8F0A0 82%, #7DBF3A 100%); display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; }
+.cloud { position: fixed; background: rgba(255,255,255,0.82); border-radius: 50px; pointer-events: none; z-index: 1; }
+#header { position: relative; z-index: 10; width: 100%; max-width: 480px; padding: 12px 16px 10px; padding-top: max(12px, env(safe-area-inset-top)); text-align: center; background: rgba(255,255,255,0.2); border-bottom: 2px solid rgba(255,255,255,0.4); }
+#header h1 { font-size: 19px; color: #fff; font-weight: 700; letter-spacing: 1px; text-shadow: 0 2px 6px rgba(0,80,0,0.35); }
+#hud { position: relative; z-index: 10; width: 100%; max-width: 480px; display: flex; justify-content: space-around; align-items: center; padding: 6px 8px; background: rgba(255,255,255,0.28); }
 .hud-item { text-align: center; flex: 1; }
 .hud-label { font-size: 10px; color: rgba(0,70,0,0.75); font-weight: 700; letter-spacing: 0.5px; }
 .hud-val { font-size: 22px; font-weight: 700; color: #1a4a00; line-height: 1.2; }
-#timer-wrap {
-  position: relative; z-index: 10;
-  width: 100%; max-width: 480px;
-  padding: 4px 12px;
-  background: rgba(255,255,255,0.2);
-}
-#timer-bar-bg {
-  background: rgba(255,255,255,0.4);
-  border-radius: 999px; height: 10px;
-  overflow: hidden;
-}
-#timer-bar {
-  height: 10px; border-radius: 999px;
-  background: #4CAF50;
-  width: 100%;
-  transition: width 0.1s linear, background 0.3s;
-}
-#field {
-  position: relative; z-index: 5;
-  width: 100%; max-width: 480px;
-  flex: 1;
-  overflow: hidden;
-  touch-action: none;
-}
-.fruit {
-  position: absolute;
-  font-size: 54px; line-height: 1;
-  touch-action: manipulation;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-  will-change: top;
-  animation: fallDown linear forwards;
-}
-.fruit.tapped {
-  animation: burst 0.3s ease-out forwards !important;
-  pointer-events: none;
-  touch-action: none;
-}
-@keyframes fallDown {
-  0%   { transform: translateY(-70px); opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateY(var(--fall-distance, 900px)); opacity: 0.4; }
-}
-@keyframes burst {
-  0%   { transform: scale(1);   opacity: 1; }
-  50%  { transform: scale(1.7); opacity: 0.7; }
-  100% { transform: scale(0.1); opacity: 0; }
-}
-.score-pop {
-  position: absolute;
-  font-size: 20px; font-weight: 700;
-  color: #FF5500;
-  text-shadow: 0 1px 4px rgba(255,100,0,0.3);
-  pointer-events: none; z-index: 20;
-  animation: popFly 0.85s ease-out forwards;
-}
-.miss-pop {
-  position: absolute;
-  font-size: 17px; font-weight: 700;
-  color: #CC0000;
-  pointer-events: none; z-index: 20;
-  animation: popFly 0.85s ease-out forwards;
-}
-@keyframes popFly {
-  0%   { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-70px) scale(1.3); }
-}
-#ground {
-  position: relative; z-index: 8;
-  width: 100%; max-width: 480px;
-  height: 40px;
-  background: linear-gradient(180deg, #7DBF3A, #4E8A1E);
-  border-top: 4px solid #5EA830;
-  display: flex; align-items: center; justify-content: center;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-#ground-text {
-  font-size: 14px; color: rgba(255,255,255,0.75);
-  font-weight: 700; letter-spacing: 3px;
-}
+#timer-wrap { position: relative; z-index: 10; width: 100%; max-width: 480px; padding: 4px 12px; background: rgba(255,255,255,0.2); }
+#timer-bar-bg { background: rgba(255,255,255,0.4); border-radius: 999px; height: 10px; overflow: hidden; }
+#timer-bar { height: 10px; border-radius: 999px; background: #4CAF50; width: 100%; transition: width 0.1s linear, background 0.3s; }
+#field { position: relative; z-index: 5; width: 100%; max-width: 480px; flex: 1; overflow: hidden; touch-action: none; }
+.fruit { position: absolute; font-size: 54px; line-height: 1; touch-action: manipulation; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); will-change: top; animation: fallDown linear forwards; }
+.fruit.tapped { animation: burst 0.3s ease-out forwards !important; pointer-events: none; touch-action: none; }
+@keyframes fallDown { 0% { transform: translateY(-70px); opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(var(--fall-distance, 900px)); opacity: 0.4; } }
+@keyframes burst { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.7); opacity: 0.7; } 100% { transform: scale(0.1); opacity: 0; } }
+.score-pop { position: absolute; font-size: 20px; font-weight: 700; color: #FF5500; text-shadow: 0 1px 4px rgba(255,100,0,0.3); pointer-events: none; z-index: 20; animation: popFly 0.85s ease-out forwards; }
+.miss-pop { position: absolute; font-size: 17px; font-weight: 700; color: #CC0000; pointer-events: none; z-index: 20; animation: popFly 0.85s ease-out forwards; }
+@keyframes popFly { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-70px) scale(1.3); } }
+#ground { position: relative; z-index: 8; width: 100%; max-width: 480px; height: 40px; background: linear-gradient(180deg, #7DBF3A, #4E8A1E); border-top: 4px solid #5EA830; display: flex; align-items: center; justify-content: center; padding-bottom: env(safe-area-inset-bottom, 0); }
+#ground-text { font-size: 14px; color: rgba(255,255,255,0.75); font-weight: 700; letter-spacing: 3px; }
 
-/* ===== スタート画面 ===== */
-#start-screen {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 100;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 18px;
-  background: rgba(100,200,100,0.75);
-  padding: 20px;
-  padding-top: max(20px, env(safe-area-inset-top));
-}
+/* スタート画面 */
+#start-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(100,200,100,0.75); padding: 20px; padding-top: max(20px, env(safe-area-inset-top)); }
 .fruits-preview { font-size: 42px; letter-spacing: 6px; }
-#start-screen h2 {
-  font-size: 26px; font-weight: 700; color: #fff;
-  text-shadow: 0 2px 8px rgba(0,100,0,0.4);
-}
-#start-screen p {
-  font-size: 15px; color: rgba(255,255,255,0.95);
-  text-align: center; line-height: 1.9;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-.level-grid {
-  display: flex; gap: 10px;
-  flex-wrap: wrap; justify-content: center;
-  width: 100%;
-}
-.lv-card {
-  background: rgba(255,255,255,0.95);
-  border-radius: 18px;
-  padding: 14px 18px;
-  text-align: center;
-  border: 3px solid transparent;
-  min-width: 96px;
-  box-shadow: 0 5px 0 rgba(0,0,0,0.1);
-  -webkit-tap-highlight-color: transparent;
-}
+#start-screen h2 { font-size: 26px; font-weight: 700; color: #fff; text-shadow: 0 2px 8px rgba(0,100,0,0.4); }
+#start-screen p { font-size: 15px; color: rgba(255,255,255,0.95); text-align: center; line-height: 1.9; text-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.level-grid { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.lv-card { background: rgba(255,255,255,0.95); border-radius: 18px; padding: 14px 18px; text-align: center; border: 3px solid transparent; min-width: 96px; box-shadow: 0 5px 0 rgba(0,0,0,0.1); cursor: pointer; }
 .lv-card:active { transform: scale(0.93) translateY(4px); }
 .lv-card .lv-icon { font-size: 28px; margin-bottom: 4px; }
 .lv-card .lv-name { font-size: 14px; font-weight: 700; color: #334; }
 .lv-card .lv-desc { font-size: 11px; color: #778; margin-top: 3px; }
-.lv-easy   { border-color: #66BB6A; }
-.lv-normal { border-color: #42A5F5; }
-.lv-hard   { border-color: #EF5350; }
+.lv-easy { border-color: #66BB6A; } .lv-normal { border-color: #42A5F5; } .lv-hard { border-color: #EF5350; }
 
-/* ===== 結果画面 ===== */
-#result-screen {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 100;
-  display: none; flex-direction: column;
-  align-items: center; justify-content: center; gap: 16px;
-  background: rgba(0,40,0,0.75);
-  padding: 20px;
-}
-#result-card {
-  background: rgba(255,255,255,0.98);
-  border-radius: 28px;
-  padding: 30px 24px 20px;
-  text-align: center;
-  width: 92%; max-width: 340px;
-  box-shadow: 0 10px 0 rgba(0,0,0,0.15);
-}
+/* カウントダウン */
+#countdown-overlay { position: fixed; inset: 0; z-index: 150; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); }
+#countdown-num { font-size: 120px; font-weight: 700; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.5); animation: countPop 0.5s ease-out; }
+@keyframes countPop { 0% { transform: scale(2.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+/* 結果画面 */
+#result-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: rgba(0,40,0,0.75); padding: 20px; }
+#result-card { background: rgba(255,255,255,0.98); border-radius: 28px; padding: 30px 24px 20px; text-align: center; width: 92%; max-width: 340px; box-shadow: 0 10px 0 rgba(0,0,0,0.15); }
 #result-stars { font-size: 36px; letter-spacing: 4px; margin-bottom: 10px; }
 #result-title { font-size: 24px; font-weight: 700; color: #E74C3C; margin-bottom: 8px; }
 #result-detail { font-size: 15px; color: #667; line-height: 1.8; margin-bottom: 20px; }
-.res-btn {
-  display: block; width: 100%; padding: 14px;
-  font-size: 17px; font-weight: 700;
-  font-family: inherit;
-  border-radius: 999px; border: none;
-  margin-bottom: 10px;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
-}
+.res-btn { display: block; width: 100%; padding: 14px; font-size: 17px; font-weight: 700; font-family: inherit; border-radius: 999px; border: none; margin-bottom: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-appearance: none; appearance: none; }
 .res-btn:active { transform: translateY(3px); }
 #btn-retry { background: #E74C3C; color: #fff; box-shadow: 0 5px 0 #C0392B; }
 #btn-menu  { background: #f0f0f0; color: #555; box-shadow: 0 5px 0 #ccc; }
-
-/* ① Xバナー：結果画面内の一番下・小さく */
-#x-result-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  margin-top: 6px;
-  padding: 8px 14px;
-  background: #111;
-  border-radius: 999px;
-  text-decoration: none;
-  opacity: 0.72;
-  font-size: 12px;
-  color: #fff;
-}
+#x-result-banner { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 6px; padding: 8px 14px; background: #111; border-radius: 999px; text-decoration: none; opacity: 0.72; font-size: 12px; color: #fff; }
 #x-result-banner svg { width: 11px; height: 11px; fill: #fff; flex-shrink: 0; }
 #x-result-banner span { white-space: nowrap; }
 
-/* ===== 花火キャンバス ===== */
-#fireworks-canvas {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 200;
-}
+/* 花火 */
+#fireworks-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 200; }
 </style>
 </head>
 <body>
@@ -255,40 +79,26 @@ body {
 <div class="cloud" style="width:70px;height:22px;top:21%;left:28%"></div>
 <div class="cloud" style="width:110px;height:30px;top:4%;left:68%"></div>
 
-<!-- スタート画面 -->
+<div id="countdown-overlay"><div id="countdown-num">3</div></div>
+
 <div id="start-screen">
   <div class="fruits-preview">🍎🍊🍋🍇🍓</div>
   <h2>くだものキャッチ！</h2>
   <p>うえから おちてくる くだものを<br>おちる まえに タップしよう！<br>たくさん とれるかな？🌟</p>
   <div class="level-grid">
-    <div class="lv-card lv-easy" id="btn-easy">
-      <div class="lv-icon">🌱</div>
-      <div class="lv-name">かんたん</div>
-      <div class="lv-desc">ゆっくり おちる</div>
-    </div>
-    <div class="lv-card lv-normal" id="btn-normal">
-      <div class="lv-icon">⭐</div>
-      <div class="lv-name">ふつう</div>
-      <div class="lv-desc">すこし はやい</div>
-    </div>
-    <div class="lv-card lv-hard" id="btn-hard">
-      <div class="lv-icon">🔥</div>
-      <div class="lv-name">むずかしい</div>
-      <div class="lv-desc">どんどん おちる</div>
-    </div>
+    <div class="lv-card lv-easy" id="btn-easy"><div class="lv-icon">🌱</div><div class="lv-name">かんたん</div><div class="lv-desc">ゆっくり おちる</div></div>
+    <div class="lv-card lv-normal" id="btn-normal"><div class="lv-icon">⭐</div><div class="lv-name">ふつう</div><div class="lv-desc">すこし はやい</div></div>
+    <div class="lv-card lv-hard" id="btn-hard"><div class="lv-icon">🔥</div><div class="lv-name">むずかしい</div><div class="lv-desc">どんどん おちる</div></div>
   </div>
 </div>
 
-<!-- 結果画面 -->
 <div id="result-screen">
   <div id="result-card">
     <div id="result-stars"></div>
     <div id="result-title"></div>
     <div id="result-detail"></div>
     <button class="res-btn" id="btn-retry">🔄 もういちど！</button>
-    <!-- ③ メニューへボタン：確認ダイアログつき -->
     <button class="res-btn" id="btn-menu">🏠 メニューへもどる</button>
-    <!-- ① Xバナーを一番下・小さく -->
     <a id="x-result-banner" href="https://x.com/rabojasu" target="_blank" rel="noopener noreferrer">
       <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
       <span>@rabojasu をフォローする</span>
@@ -296,312 +106,281 @@ body {
   </div>
 </div>
 
-<!-- ゲーム本体 -->
 <div id="header"><h1>🍎 くだものキャッチ！ 🍊</h1></div>
 <div id="hud">
-  <div class="hud-item">
-    <div class="hud-label">⭐ スコア</div>
-    <div class="hud-val" id="hud-score">0</div>
-  </div>
-  <div class="hud-item">
-    <div class="hud-label">🎯 とれた</div>
-    <div class="hud-val" id="hud-caught">0</div>
-  </div>
-  <div class="hud-item">
-    <div class="hud-label">💨 のがした</div>
-    <div class="hud-val" id="hud-missed">0</div>
-  </div>
-  <div class="hud-item">
-    <div class="hud-label">❤️ のこり</div>
-    <div class="hud-val" id="hud-lives">❤️❤️❤️</div>
-  </div>
+  <div class="hud-item"><div class="hud-label">⭐ スコア</div><div class="hud-val" id="hud-score">0</div></div>
+  <div class="hud-item"><div class="hud-label">🎯 とれた</div><div class="hud-val" id="hud-caught">0</div></div>
+  <div class="hud-item"><div class="hud-label">💨 のがした</div><div class="hud-val" id="hud-missed">0</div></div>
+  <div class="hud-item"><div class="hud-label">❤️ のこり</div><div class="hud-val" id="hud-lives">❤️❤️❤️</div></div>
 </div>
-<div id="timer-wrap">
-  <div id="timer-bar-bg"><div id="timer-bar"></div></div>
-</div>
+<div id="timer-wrap"><div id="timer-bar-bg"><div id="timer-bar"></div></div></div>
 <div id="field"></div>
-<!-- ② ground固定でスクロール不要・上にスクロールする隙間をなくす -->
 <div id="ground"><div id="ground-text">🌿🌿🌿🌿🌿🌿🌿🌿</div></div>
-
 <canvas id="fireworks-canvas"></canvas>
 
 <script>
-/* ===== 設定 ===== */
+/* =============================================
+   🔊 Web Audio API 効果音
+   iOSはユーザー操作をきっかけに初期化必須
+============================================= */
+let audioCtx = null;
+
+function initAudio() {
+  if (audioCtx) return;
+  try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+}
+
+function playNotes(notes, type) {
+  if (!audioCtx) return;
+  let t = audioCtx.currentTime;
+  notes.forEach(function(n) {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(n.freq, t);
+    gain.gain.setValueAtTime(n.vol || 0.3, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + n.dur);
+    osc.start(t); osc.stop(t + n.dur);
+    t += n.dur;
+  });
+}
+
+// 🍎 タップ成功：明るいポップ音
+function sfxCatch() {
+  playNotes([{freq:523,dur:0.07,vol:0.28},{freq:659,dur:0.07,vol:0.28},{freq:784,dur:0.12,vol:0.32}],'sine');
+}
+// 💨 ミス：ブー音
+function sfxMiss() {
+  playNotes([{freq:220,dur:0.08,vol:0.22},{freq:180,dur:0.15,vol:0.18}],'square');
+}
+// ❤️ ライフ減少：ドスン
+function sfxLifeLost() {
+  playNotes([{freq:300,dur:0.1,vol:0.28},{freq:180,dur:0.25,vol:0.22}],'sawtooth');
+}
+// 🎉 クリア・良結果：ファンファーレ
+function sfxClear() {
+  playNotes([{freq:523,dur:0.1,vol:0.28},{freq:659,dur:0.1,vol:0.28},{freq:784,dur:0.1,vol:0.28},{freq:1047,dur:0.35,vol:0.32}],'sine');
+}
+// 😢 ゲームオーバー：残念音
+function sfxGameOver() {
+  playNotes([{freq:392,dur:0.15,vol:0.28},{freq:330,dur:0.15,vol:0.25},{freq:262,dur:0.35,vol:0.22}],'triangle');
+}
+// 🔢 カウントダウン：ビープ
+function sfxCount(isGo) {
+  if (isGo) { playNotes([{freq:880,dur:0.25,vol:0.32}],'sine'); }
+  else       { playNotes([{freq:440,dur:0.15,vol:0.22}],'sine'); }
+}
+
+/* =============================================
+   ゲーム本体
+============================================= */
 const FRUITS = ['🍎','🍊','🍋','🍇','🍓','🍒','🍑','🍌','🍉','🍍','🥝','🫐','🍐'];
 const LEVELS = {
-  easy:   { fallSec: 4.5, intervalMs: 1400, lives: 5, timeSec: 45, maxAtOnce: 2 },
-  normal: { fallSec: 3.0, intervalMs: 1000, lives: 3, timeSec: 40, maxAtOnce: 3 },
-  hard:   { fallSec: 1.8, intervalMs: 700,  lives: 3, timeSec: 35, maxAtOnce: 4 }
+  easy:   {fallSec:4.5, intervalMs:1400, lives:5, timeSec:45, maxAtOnce:2},
+  normal: {fallSec:3.0, intervalMs:1000, lives:3, timeSec:40, maxAtOnce:3},
+  hard:   {fallSec:1.8, intervalMs:700,  lives:3, timeSec:35, maxAtOnce:4}
 };
 
-let score = 0, caught = 0, missed = 0, lives = 3;
-let timeLeft = 45;
-let gameActive = false;
-let currentLevel = 'easy';
-let fruitId = 0;
-let activeFruits = new Set();
-let spawnTimer = null, countTimer = null;
+let score=0, caught=0, missed=0, lives=3, timeLeft=45;
+let gameActive=false, currentLevel='easy', fruitId=0;
+let activeFruits=new Set(), spawnTimer=null, countTimer=null;
 
-/* ===== タップハンドラ ===== */
 function addTapHandler(el, fn) {
-  let touchStarted = false;
-  el.addEventListener('touchstart', function(e) {
-    e.preventDefault(); touchStarted = true;
-  }, { passive: false });
-  el.addEventListener('touchend', function(e) {
-    e.preventDefault();
-    if (touchStarted) { touchStarted = false; fn(); }
-  }, { passive: false });
-  el.addEventListener('click', function(e) { e.preventDefault(); fn(); });
+  let touched=false;
+  el.addEventListener('touchstart',function(e){e.preventDefault();touched=true;},{passive:false});
+  el.addEventListener('touchend',function(e){e.preventDefault();if(touched){touched=false;fn();}},{passive:false});
+  el.addEventListener('click',function(e){e.preventDefault();fn();});
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  addTapHandler(document.getElementById('btn-easy'),   function(){ startGame('easy'); });
-  addTapHandler(document.getElementById('btn-normal'), function(){ startGame('normal'); });
-  addTapHandler(document.getElementById('btn-hard'),   function(){ startGame('hard'); });
-  addTapHandler(document.getElementById('btn-retry'),  retryGame);
-
-  /* ③ メニューへ：確認ダイアログで誤タップ防止 */
-  addTapHandler(document.getElementById('btn-menu'), function() {
-    if (confirm('メニューにもどりますか？')) {
-      showMenu();
-    }
+  addTapHandler(document.getElementById('btn-easy'),   function(){initAudio();beginCountdown('easy');});
+  addTapHandler(document.getElementById('btn-normal'), function(){initAudio();beginCountdown('normal');});
+  addTapHandler(document.getElementById('btn-hard'),   function(){initAudio();beginCountdown('hard');});
+  addTapHandler(document.getElementById('btn-retry'),  function(){initAudio();retryGame();});
+  addTapHandler(document.getElementById('btn-menu'),   function(){
+    if(confirm('メニューにもどりますか？')){showMenu();}
   });
 });
 
-/* ===== ゲーム開始 ===== */
-function startGame(level) {
+/* 3・2・1 カウントダウン演出 */
+function beginCountdown(level) {
   currentLevel = level;
+  document.getElementById('start-screen').style.display = 'none';
+  const overlay = document.getElementById('countdown-overlay');
+  const numEl   = document.getElementById('countdown-num');
+  overlay.style.display = 'flex';
+  const counts = ['3','2','1','スタート！'];
+  let i = 0;
+  function showNext() {
+    if (i >= counts.length) { overlay.style.display='none'; startGame(level); return; }
+    numEl.style.animation = 'none';
+    numEl.offsetHeight;
+    numEl.style.animation = 'countPop 0.5s ease-out';
+    numEl.textContent = counts[i];
+    sfxCount(i === 3);
+    i++;
+    setTimeout(showNext, 800);
+  }
+  showNext();
+}
+
+function startGame(level) {
   const cfg = LEVELS[level];
-  score = 0; caught = 0; missed = 0;
-  lives = cfg.lives; timeLeft = cfg.timeSec;
-  gameActive = true; fruitId = 0;
+  score=0; caught=0; missed=0;
+  lives=cfg.lives; timeLeft=cfg.timeSec;
+  gameActive=true; fruitId=0;
   activeFruits.clear();
   document.getElementById('field').innerHTML = '';
-  document.getElementById('start-screen').style.display = 'none';
   document.getElementById('result-screen').style.display = 'none';
   updateHUD(); updateTimerBar();
   scheduleFruit(); startCountdown();
 }
 
-/* ===== HUD更新 ===== */
 function updateHUD() {
   const cfg = LEVELS[currentLevel];
-  document.getElementById('hud-score').textContent = score;
+  document.getElementById('hud-score').textContent  = score;
   document.getElementById('hud-caught').textContent = caught;
   document.getElementById('hud-missed').textContent = missed;
-  let hearts = '';
-  for (let i = 0; i < lives; i++) hearts += '❤️';
-  for (let i = lives; i < cfg.lives; i++) hearts += '🤍';
-  document.getElementById('hud-lives').textContent = hearts;
+  let h='';
+  for(let i=0;i<lives;i++) h+='❤️';
+  for(let i=lives;i<cfg.lives;i++) h+='🤍';
+  document.getElementById('hud-lives').textContent = h;
 }
 
 function updateTimerBar() {
   const cfg = LEVELS[currentLevel];
-  const pct = Math.max(0, (timeLeft / cfg.timeSec) * 100);
+  const pct = Math.max(0,(timeLeft/cfg.timeSec)*100);
   const bar = document.getElementById('timer-bar');
-  bar.style.width = pct + '%';
-  bar.style.background = pct > 50 ? '#4CAF50' : pct > 25 ? '#FFC107' : '#F44336';
+  bar.style.width = pct+'%';
+  bar.style.background = pct>50?'#4CAF50':pct>25?'#FFC107':'#F44336';
 }
 
-/* ===== カウントダウン ===== */
 function startCountdown() {
   clearInterval(countTimer);
-  countTimer = setInterval(function() {
-    if (!gameActive) { clearInterval(countTimer); return; }
-    timeLeft -= 0.1; updateTimerBar();
-    if (timeLeft <= 0) { clearInterval(countTimer); endGame(); }
-  }, 100);
+  countTimer = setInterval(function(){
+    if(!gameActive){clearInterval(countTimer);return;}
+    timeLeft-=0.1; updateTimerBar();
+    if(timeLeft<=0){clearInterval(countTimer);endGame();}
+  },100);
 }
 
-/* ===== スポーン ===== */
 function scheduleFruit() {
-  if (!gameActive) return;
+  if(!gameActive) return;
   const cfg = LEVELS[currentLevel];
-  const count = 1 + Math.floor(Math.random() * cfg.maxAtOnce);
-  for (let i = 0; i < count; i++) setTimeout(spawnOne, i * 200);
-  const next = cfg.intervalMs * (0.8 + Math.random() * 0.4);
-  spawnTimer = setTimeout(scheduleFruit, next);
+  const count = 1+Math.floor(Math.random()*cfg.maxAtOnce);
+  for(let i=0;i<count;i++) setTimeout(spawnOne, i*200);
+  spawnTimer = setTimeout(scheduleFruit, cfg.intervalMs*(0.8+Math.random()*0.4));
 }
 
 function spawnOne() {
-  if (!gameActive) return;
-  const field = document.getElementById('field');
+  if(!gameActive) return;
+  const field  = document.getElementById('field');
   const fieldH = field.offsetHeight || window.innerHeight;
-  const emoji = FRUITS[Math.floor(Math.random() * FRUITS.length)];
-  const id = 'fr' + (fruitId++);
-  const leftPct = 6 + Math.random() * 80;
-
-  const el = document.createElement('div');
-  el.className = 'fruit'; el.id = id; el.textContent = emoji;
-  el.style.left = leftPct + '%'; el.style.top = '0px';
-  el.style.setProperty('--fall-distance', (fieldH + 100) + 'px');
-
+  const emoji  = FRUITS[Math.floor(Math.random()*FRUITS.length)];
+  const id     = 'fr'+(fruitId++);
+  const leftPct= 6+Math.random()*80;
+  const el     = document.createElement('div');
+  el.className='fruit'; el.id=id; el.textContent=emoji;
+  el.style.left=leftPct+'%'; el.style.top='0px';
+  el.style.setProperty('--fall-distance',(fieldH+100)+'px');
   const cfg = LEVELS[currentLevel];
-  const dur = cfg.fallSec * (0.85 + Math.random() * 0.3);
-  el.style.animationDuration = dur + 's';
+  const dur = cfg.fallSec*(0.85+Math.random()*0.3);
+  el.style.animationDuration=dur+'s';
   field.appendChild(el);
   activeFruits.add(id);
-
-  let tapped = false;
-  el.addEventListener('touchstart', function(e) {
-    e.preventDefault(); e.stopPropagation();
-    if (!gameActive || tapped || el.classList.contains('tapped')) return;
-    tapped = true; tapFruit(el, id, leftPct);
-  }, { passive: false });
-  el.addEventListener('click', function(e) {
-    e.preventDefault(); e.stopPropagation();
-    if (!gameActive || tapped || el.classList.contains('tapped')) return;
-    tapped = true; tapFruit(el, id, leftPct);
-  });
-
-  setTimeout(function() {
-    if (!gameActive) return;
-    if (activeFruits.has(id)) {
-      activeFruits.delete(id);
-      if (el.parentNode) el.remove();
-      onMiss(leftPct);
-    }
-  }, dur * 1000 + 150);
+  let tapped=false;
+  function onTap(e){ e.preventDefault(); e.stopPropagation(); if(!gameActive||tapped||el.classList.contains('tapped'))return; tapped=true; tapFruit(el,id,leftPct); }
+  el.addEventListener('touchstart',onTap,{passive:false});
+  el.addEventListener('click',onTap);
+  setTimeout(function(){
+    if(!gameActive) return;
+    if(activeFruits.has(id)){ activeFruits.delete(id); if(el.parentNode)el.remove(); onMiss(leftPct); }
+  }, dur*1000+150);
 }
 
-/* ===== タップ成功 ===== */
-function tapFruit(el, id, left) {
+function tapFruit(el,id,left){
   activeFruits.delete(id);
   el.classList.add('tapped');
-  caught++; score += 10; updateHUD();
-  const field = document.getElementById('field');
-  const pop = document.createElement('div');
-  pop.className = 'score-pop';
-  pop.textContent = '+10 ⭐';
-  pop.style.left = left + '%'; pop.style.top = '40%';
+  caught++; score+=10; updateHUD();
+  sfxCatch(); // 🔊
+  const field=document.getElementById('field');
+  const pop=document.createElement('div');
+  pop.className='score-pop'; pop.textContent='+10 ⭐';
+  pop.style.left=left+'%'; pop.style.top='40%';
   field.appendChild(pop);
-  setTimeout(function() {
-    if (pop.parentNode) pop.remove();
-    if (el.parentNode) el.remove();
-  }, 900);
+  setTimeout(function(){if(pop.parentNode)pop.remove();if(el.parentNode)el.remove();},900);
 }
 
-/* ===== ミス ===== */
-function onMiss(left) {
-  missed++; lives = Math.max(0, lives - 1); updateHUD();
-  const field = document.getElementById('field');
-  const pop = document.createElement('div');
-  pop.className = 'miss-pop';
-  pop.textContent = '💨 のがした！';
-  pop.style.left = Math.max(4, left - 8) + '%'; pop.style.bottom = '50px';
+function onMiss(left){
+  missed++;
+  const prev=lives;
+  lives=Math.max(0,lives-1);
+  updateHUD();
+  if(lives<prev){ sfxLifeLost(); } else { sfxMiss(); } // 🔊
+  const field=document.getElementById('field');
+  const pop=document.createElement('div');
+  pop.className='miss-pop'; pop.textContent='💨 のがした！';
+  pop.style.left=Math.max(4,left-8)+'%'; pop.style.bottom='50px';
   field.appendChild(pop);
-  setTimeout(function() { if (pop.parentNode) pop.remove(); }, 900);
-  if (lives <= 0) {
-    clearTimeout(spawnTimer); clearInterval(countTimer);
-    setTimeout(endGame, 400);
-  }
+  setTimeout(function(){if(pop.parentNode)pop.remove();},900);
+  if(lives<=0){ clearTimeout(spawnTimer); clearInterval(countTimer); setTimeout(endGame,400); }
 }
 
-/* ===== ゲーム終了 ===== */
-function endGame() {
-  gameActive = false;
+function endGame(){
+  gameActive=false;
   clearTimeout(spawnTimer); clearInterval(countTimer);
-  document.getElementById('field').innerHTML = '';
-
-  const total = caught + missed;
-  const acc = total > 0 ? Math.round(caught / total * 100) : 0;
+  document.getElementById('field').innerHTML='';
+  const total=caught+missed;
+  const acc=total>0?Math.round(caught/total*100):0;
   let stars, title;
-  if (score >= 150) {
-    stars = '⭐⭐⭐'; title = 'すごい！ くだものマスター！';
-    launchFireworks();
-  } else if (score >= 80) {
-    stars = '⭐⭐'; title = 'よくできました！';
-  } else {
-    stars = '⭐'; title = 'がんばったね！';
-  }
-
-  document.getElementById('result-stars').textContent = stars;
-  document.getElementById('result-title').textContent = title;
-  document.getElementById('result-detail').innerHTML =
-    'スコア：<b>' + score + ' てん</b><br>' +
-    'とれた：' + caught + ' こ　のがした：' + missed + ' こ<br>' +
-    'せいかいりつ：' + acc + '%';
-
-  const rs = document.getElementById('result-screen');
-  rs.style.display = 'flex';
+  if(score>=150){ stars='⭐⭐⭐'; title='すごい！ くだものマスター！'; sfxClear(); launchFireworks(); }
+  else if(score>=80){ stars='⭐⭐'; title='よくできました！'; sfxClear(); }
+  else { stars='⭐'; title='がんばったね！'; sfxGameOver(); }
+  document.getElementById('result-stars').textContent  = stars;
+  document.getElementById('result-title').textContent  = title;
+  document.getElementById('result-detail').innerHTML   =
+    'スコア：<b>'+score+' てん</b><br>とれた：'+caught+' こ　のがした：'+missed+' こ<br>せいかいりつ：'+acc+'%';
+  document.getElementById('result-screen').style.display='flex';
 }
 
-function retryGame() {
-  document.getElementById('result-screen').style.display = 'none';
-  startGame(currentLevel);
-}
-function showMenu() {
-  document.getElementById('result-screen').style.display = 'none';
-  document.getElementById('start-screen').style.display = 'flex';
-}
+function retryGame(){ document.getElementById('result-screen').style.display='none'; beginCountdown(currentLevel); }
+function showMenu(){ document.getElementById('result-screen').style.display='none'; document.getElementById('start-screen').style.display='flex'; }
 
-/* ② スクロール完全ブロック */
-document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+document.addEventListener('touchmove',function(e){e.preventDefault();},{passive:false});
 
-/* ===== 花火エフェクト ===== */
-(function() {
-  const canvas = document.getElementById('fireworks-canvas');
-  const ctx = canvas.getContext('2d');
-  let animId = null;
-  let particles = [];
-
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  function createBurst(x, y, color) {
-    const count = 60;
-    for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 / count) * i;
-      const speed = 3 + Math.random() * 5;
-      particles.push({
-        x: x, y: y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        alpha: 1,
-        color: color,
-        radius: 3 + Math.random() * 3,
-        decay: 0.013 + Math.random() * 0.007,
-        gravity: 0.12
-      });
+/* 花火 */
+(function(){
+  const canvas=document.getElementById('fireworks-canvas');
+  const ctx=canvas.getContext('2d');
+  let animId=null, particles=[];
+  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+  window.addEventListener('resize',resize); resize();
+  function createBurst(x,y,color){
+    for(let i=0;i<60;i++){
+      const a=(Math.PI*2/60)*i, s=3+Math.random()*5;
+      particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,alpha:1,color,radius:3+Math.random()*3,decay:0.013+Math.random()*0.007,gravity:0.12});
     }
   }
-
-  const PALETTES = [
-    ['#FF6B6B','#FF8E53','#FFD93D'],
-    ['#6BCB77','#4D96FF','#C77DFF'],
-    ['#FFD700','#FF69B4','#00CED1']
-  ];
-
-  window.launchFireworks = function() {
-    particles = [];
-    if (animId) cancelAnimationFrame(animId);
-    const W = canvas.width, H = canvas.height;
-    setTimeout(function() { createBurst(W*0.25,H*0.30,PALETTES[0][0]); createBurst(W*0.25,H*0.30,PALETTES[0][1]); if(!animId)loop(); }, 200);
-    setTimeout(function() { createBurst(W*0.50,H*0.20,PALETTES[1][0]); createBurst(W*0.50,H*0.20,PALETTES[1][2]); }, 700);
-    setTimeout(function() { createBurst(W*0.75,H*0.28,PALETTES[2][0]); createBurst(W*0.75,H*0.28,PALETTES[2][1]); }, 1200);
+  const P=[['#FF6B6B','#FF8E53'],['#6BCB77','#4D96FF'],['#FFD700','#FF69B4']];
+  window.launchFireworks=function(){
+    particles=[]; if(animId)cancelAnimationFrame(animId);
+    const W=canvas.width,H=canvas.height;
+    setTimeout(function(){createBurst(W*.25,H*.30,P[0][0]);createBurst(W*.25,H*.30,P[0][1]);if(!animId)loop();},200);
+    setTimeout(function(){createBurst(W*.50,H*.20,P[1][0]);createBurst(W*.50,H*.20,P[1][1]);},700);
+    setTimeout(function(){createBurst(W*.75,H*.28,P[2][0]);createBurst(W*.75,H*.28,P[2][1]);},1200);
   };
-
-  function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(function(p) {
-      p.x+=p.vx; p.y+=p.vy; p.vy+=p.gravity;
-      p.vx*=0.97; p.vy*=0.97; p.alpha-=p.decay;
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, p.alpha);
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
+  function loop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(function(p){
+      p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.vx*=0.97;p.vy*=0.97;p.alpha-=p.decay;
+      ctx.save();ctx.globalAlpha=Math.max(0,p.alpha);ctx.fillStyle=p.color;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);ctx.fill();ctx.restore();
     });
-    particles = particles.filter(function(p){ return p.alpha > 0; });
-    if (particles.length > 0) { animId = requestAnimationFrame(loop); }
-    else { animId = null; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    particles=particles.filter(function(p){return p.alpha>0;});
+    if(particles.length>0){animId=requestAnimationFrame(loop);}
+    else{animId=null;ctx.clearRect(0,0,canvas.width,canvas.height);}
   }
 })();
 </script>
